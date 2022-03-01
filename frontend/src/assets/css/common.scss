@@ -1,0 +1,187 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, menu, nav, output, ruby, section, summary, time, mark, audio, video, input {margin: 0;padding: 0;border: 0;font-size: 100%;font-weight: normal;vertical-align: baseline;}
+article, aside, details, figcaption, figure, footer, header, menu, nav, section {display: block;}
+body {line-height: 1;height: 100%;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after, q:before, q:after {content: none;}
+
+a {
+  color: #7e8c8d;
+  text-decoration: none;
+  -webkit-backface-visibility: hidden;
+}
+
+li {
+  list-style: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  height: 15px;
+  background-color: rgba(125, 125, 125, 0.7);
+  -webkit-border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  width: 15px;
+  background-color: rgba(125, 125, 125, 0.7);
+  -webkit-border-radius: 6px;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #f5f6fa;
+}
+
+body {
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/*显示省略号*/
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.el-pagination .el-select .el-input .el-input__inner {
+  padding-right: 25px;
+  border-radius: 3px;
+  width: 100px;
+}
+
+input, textarea {
+  outline: none;
+  resize: none;
+  text-indent: 10px;
+  color: #9E9EA0;
+}
+
+::-webkit-input-placeholder {
+  font-size: 10px;
+  color: #9E9EA0; /* 使用webkit内核的浏览器 */
+}
+
+:-moz-placeholder {
+  font-size: 10px;
+  color: #9E9EA0;
+}
+
+/* Firefox版本4-18 */
+::-moz-placeholder {
+  font-size: 10px;
+  color: #9E9EA0;
+}
+
+/* Firefox版本19+ */
+:-ms-input-placeholder {
+  font-size: 10px;
+  color: #9E9EA0;
+}
+.el-radio {
+  margin-right: 10px !important;
+}
+
+::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+  font-size: 12px!important;
+
+}
+::-moz-placeholder { /* Firefox 19+ */
+  font-size: 12px!important;
+
+}
+:-ms-input-placeholder { /* IE 10+ */
+  font-size: 12px!important;
+
+}
+:-moz-placeholder {
+  font-size: 12px!important;
+
+}
+*{
+  font-family:"\5FAE\8F6F\96C5\9ED1","Microsoft Yahei","Hiragino Sans GB",tahoma,arial,"\5B8B\4F53"  ;
+}
+
+.submenu.el-menu--horizontal>.el-sub-menu .el-sub-menu__title{
+  text-align: center;
+}
+
+.textDecorationUnderL{
+  text-decoration: underline;
+  color: #409EFF;
+  cursor: pointer
+}
+.tableSelect{
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 0 5px #cccccc;
+  margin-bottom: 10px;
+  .el-form{
+    display: flex;
+  }
+  .el-form-item{
+    margin: 5px !important;
+  }
+}
+.table-operate-btn{
+  color: #409eff;
+  cursor: pointer;
+  margin-right: 10px;
+  font-size: 13px;
+  &.color99{
+    color: #999999;
+    cursor: default;
+  }
+}
+.el-dialog-footer{
+  text-align: center;
+}
+
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 128px;
+  height: 128px;
+  line-height: 128px;
+  text-align: center;
+}
+.avatar {
+  width: 128px;
+  height: 128px;
+  display: block;
+}
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
+}
