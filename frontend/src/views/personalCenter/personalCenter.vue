@@ -1,5 +1,5 @@
 <template>
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick" tab-position="left">
       <el-tab-pane label="用户设置" name="userInfo" >
           <el-form ref="userInfoForm" :model="userInfo" :disabled="!isShowBtn('personalCenter','个人中心','Update')"  required-asterisk :rules="userInforules" :label-position="position" center label-width="120px" style="margin: 50px auto">
             <el-form-item prop="name" required label="昵称:">
@@ -56,6 +56,7 @@
 
 <script>
     import {systemUserUserInfoEdit,systemUserUserInfo,systemUserChangePassword} from '@/api/api'
+    import store from '@/store/index'
     export default {
         name: "personalCenter",
         data() {
@@ -182,7 +183,7 @@
 
               _self.$refs.userPasswordForm.validate((valid) => {
                 if (valid) {
-                  const userId = sessionStorage.getItem('userId')
+                  const userId = store.getters.getUserId
                   if (userId) {
                     const params = JSON.parse(JSON.stringify(_self.userPasswordInfo))
                       params.id = userId
@@ -207,8 +208,14 @@
     }
 </script>
 
-<style>
-  .el-tabs__content{
-    background-color: white;
+<style scoped>
+  .el-tabs .el-tabs__content{
+    background-color: var(--el-bg-color) !important;
+  }
+  .el-tabs{
+    background-color: var(--el-bg-color) !important;
+  }
+  ::v-deep(.el-tabs__header){
+    margin-top: 20px !important;
   }
 </style>

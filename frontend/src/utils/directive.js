@@ -56,7 +56,7 @@ export default {
     // v-dialogDrag: 弹窗拖拽和双击放大属性 （重点！！！ 给模态框添加这个属性模态框就能拖拽了）
     // :destroy-on-close="true" 会导致关闭打开后拖拽事件失效
 	app.directive('dialogDrag', {
-	  mounted(el) {
+	  updated(el,binding) {
       //弹框可拉伸最小宽高
       let minWidth = 400
       let minHeight = 300
@@ -71,8 +71,10 @@ export default {
       const dialogHeaderEl = el.querySelector('.el-dialog__header')
       //弹窗
       const dragDom = el.querySelector('.el-dialog')
-      console.log(dragDom.style)
-      // dragBody.style.height = dragDom.clientHeight - 102 + 'px'
+      // console.log(dragDom,'xxxxxxx')
+      // console.log(dialogHeaderEl,'yyyyyyyy')
+      if(dialogHeaderEl && dragDom){
+          // dragBody.style.height = dragDom.clientHeight - 102 + 'px'
       //给弹窗加上overflow auto；不然缩小时框内的标签可能超出dialog；
       dragDom.style.overflow = 'auto'
       //清除选择头部文字效果
@@ -308,6 +310,7 @@ export default {
           document.onmousemove = null
           document.onmouseup = null
         }
+      }
       }
     },
 

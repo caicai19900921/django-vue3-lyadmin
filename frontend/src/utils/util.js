@@ -121,6 +121,44 @@ function limitPriceType(value){
   return value
 }
 
+function formatUnitSize (bytes, is_unit, fixed, end_unit) //字节转换，到指定单位结束 is_unit：是否显示单位  fixed：小数点位置 end_unit：结束单位
+{
+    if (bytes == undefined) return 0;
+
+    if (is_unit == undefined) is_unit = true;
+    if (fixed == undefined) fixed = 2;
+    if (end_unit == undefined) end_unit = '';
+
+    if (typeof bytes == 'string') bytes = parseInt(bytes);
+    var unit = [' B', ' KB', ' MB', ' GB', 'TB'];
+    var c = 1024;
+    for (var i = 0; i < unit.length; i++) {
+        var cUnit = unit[i];
+        if (end_unit) {
+            if (cUnit.trim() == end_unit.trim()) {
+                var val = i == 0 ? bytes : fixed == 0 ? bytes : bytes.toFixed(fixed)
+                if (is_unit) {
+                    return val + cUnit;
+                } else {
+                    val = parseFloat(val);
+                    return val;
+                }
+            }
+        } else {
+            if (bytes < c) {
+                var val = i == 0 ? bytes : fixed == 0 ? bytes : bytes.toFixed(fixed)
+                if (is_unit) {
+                    return val + cUnit;
+                } else {
+                    val = parseFloat(val);
+                    return val;
+                }
+            }
+        }
+
+        bytes /= c;
+    }
+}
 const handleDate = (date) => {
   let month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
   let day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
@@ -148,7 +186,7 @@ const commonVal = {
 }
 
 function isShowBtn(url,moduleName, btnName) {
-  let btnArr = sessionStorage.getItem('menuList')?JSON.parse(sessionStorage.getItem('menuList')):[];
+  let btnArr = localStorage.getItem('menuList')?JSON.parse(localStorage.getItem('menuList')):[];
   let isshow = false;
   for (var i = 0; i < btnArr.length; i++) {
     let item = btnArr[i];
@@ -158,6 +196,35 @@ function isShowBtn(url,moduleName, btnName) {
     }
   }
   return isshow
+}
+
+function hasPermission(url,btnName) {
+  let btnArr = localStorage.getItem('menuList')?JSON.parse(localStorage.getItem('menuList')):[];
+  let isshow = false;
+  for (var i = 0; i < btnArr.length; i++) {
+    let item = btnArr[i];
+    if (item.url == url  && item.menuPermission && item.menuPermission.includes(btnName) ) {
+      isshow = true;
+      break;
+    }
+  }
+  return isshow
+}
+
+function getTableHeight(tableSelectHeight){
+    var pagination_height = 210
+    let height = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - tableSelectHeight;
+    var ua = navigator.userAgent;
+    //获取当前设备类型（安卓或苹果）
+    if (ua && /Android/.test(ua)) {
+        return 700
+    }
+    else if (ua && /iPhone|ipad|ipod|ios/.test(ua)){
+        return 700
+    }
+    else {
+        return height - pagination_height
+    }
 }
 
 // 图片上传根据名称排序
@@ -211,7 +278,7 @@ const  sortName = (v1, v2) => {
     }
 }
 
-export {
+export{
     timestampToTime,
     dateFormats,
     setStore,
@@ -226,5 +293,8 @@ export {
     handleTime,
     commonVal,
     isShowBtn,
+    hasPermission,
+    getTableHeight,
     sortName,
+    formatUnitSize
 }

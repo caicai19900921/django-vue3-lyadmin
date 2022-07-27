@@ -1,56 +1,50 @@
 <template>
-    <div v-dialogDrag>
-    <el-dialog
-            :title="loadingTitle"
-            v-model="dialogVisible"
-            width="560px"
-            center
-            :destroy-on-close="true"
-            :close-on-click-modal="false"
-            :before-close="handleClose">
-        <el-form :inline="false" :model="formData" :rules="rules" ref="rulesForm" label-position="right" label-width="130px">
-            <el-form-item :label="(formData.type==1) ? '图片：' :'图片：'" prop="image">
-                <el-upload
-                        class="avatar-uploader"
-                        action=""
-                        list-type="picture-card"
-                        :show-file-list="false"
-                        :http-request="imgUploadRequest"
-                        :on-success="imgUploadSuccess"
-                        :before-upload="imgBeforeUpload">
-                    <img v-if="formData.image" :src="formData.image" class="avatar">
-                    <el-icon v-else><plus /></el-icon>
-                </el-upload>
-            </el-form-item>
-            <el-form-item label="标题：" prop="title">
-                <el-input type="text" v-model.trim="formData.title" style="width: 300px"></el-input>
-            </el-form-item>
-            <el-form-item label="跳转链接：" prop="link" v-if="formData.type==1 || formData.type==2">
-                <el-input v-model.trim="formData.link" style="width: 300px"></el-input>
-            </el-form-item>
-            <el-form-item label="排序：" prop="sort">
-                <el-input-number v-model="formData.sort"  :min="1" :max="9999"></el-input-number>
-            </el-form-item>
-            <el-form-item label="状态：" prop="status">
-                <el-switch
-                        v-model="formData.status"
-                        active-color="#13ce66"
-                        inactive-color="#ff4949">
-                </el-switch>
-            </el-form-item>
-        </el-form>
-        <template #footer>
-            <el-button @click="handleClose" :loading="loadingSave">取消</el-button>
-            <el-button type="primary" @click="submitData" :loading="loadingSave">确定</el-button>
-        </template>
-    </el-dialog>
+    <div>
+        <ly-dialog v-model="dialogVisible" :title="loadingTitle" width="560px" :before-close="handleClose">
+            <el-form :inline="false" :model="formData" :rules="rules" ref="rulesForm" label-position="right" label-width="auto">
+                <el-form-item :label="(formData.type==1) ? '图片：' :'图片：'" prop="image">
+                    <el-upload
+                            class="avatar-uploader"
+                            action=""
+                            :show-file-list="false"
+                            :http-request="imgUploadRequest"
+                            :on-success="imgUploadSuccess"
+                            :before-upload="imgBeforeUpload">
+                        <img v-if="formData.image" :src="formData.image" class="avatar" />
+                        <el-icon v-else class="avatar-uploader-icon" size="medium"><Plus /></el-icon>
+                    </el-upload>
+                </el-form-item>
+                <el-form-item label="标题：" prop="title">
+                    <el-input type="text" v-model.trim="formData.title"></el-input>
+                </el-form-item>
+                <el-form-item label="跳转链接：" prop="link" v-if="formData.type==1 || formData.type==2">
+                    <el-input v-model.trim="formData.link"></el-input>
+                </el-form-item>
+                <el-form-item label="排序：" prop="sort">
+                    <el-input-number v-model="formData.sort"  :min="0" :max="9999"></el-input-number>
+                </el-form-item>
+                <el-form-item label="状态：" prop="status">
+                    <el-switch
+                            v-model="formData.status"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949">
+                    </el-switch>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="handleClose" :loading="loadingSave">取消</el-button>
+                <el-button type="primary" @click="submitData" :loading="loadingSave">确定</el-button>
+            </template>
+        </ly-dialog>
     </div>
 </template>
 
 <script>
     import {platformsettingsLunboimgAdd,platformsettingsLunboimgEdit,platformsettingsUploadPlatformImg} from "@/api/api";
     import {url} from '@/api/url'
+    import LyDialog from "../../../components/dialog/dialog";
     export default {
+        components: {LyDialog},
         emits: ['refreshData'],
         name: "addModule",
         data() {
@@ -64,7 +58,7 @@
                     link:'',
                     image:'',
                     type:'',
-                    sort:'',
+                    sort:0,
                     status:true
                 },
                 rules:{
@@ -95,7 +89,7 @@
                     link:'',
                     image:'',
                     type:activeName,
-                    sort:'',
+                    sort:0,
                     status:true
                 }
             },
@@ -172,4 +166,29 @@
         }
     }
 </script>
+<style scoped>
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+      border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 128px;
+      height: 128px;
+      line-height: 128px;
+      text-align: center;
+    }
+    .avatar {
+      width: 128px;
+      height: 128px;
+      display: block;
+    }
+</style>
 

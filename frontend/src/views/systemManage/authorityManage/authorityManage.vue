@@ -1,46 +1,47 @@
 <template>
-    <div class="auth-outer">
-        <div>
-            <div class="auth-item" style="min-width: 300px;height: 300px">
-                <div class="auth-item-header">
-                    <el-tag size="large" style="font-size: 13px">当前选择:{{ roleObj.name ? roleObj.name : "无" }}</el-tag>
-                    <el-button type="primary"  @click="submitPermisson" size="default">保存</el-button>
+    <div>
+        <el-form>
+        <div class="auth-outer">
+            <div>
+                <div class="auth-item" style="min-width: 300px;height: 300px">
+                    <div class="auth-item-header">
+                        <el-tag size="large" style="font-size: 13px">当前选择:{{ roleObj.name ? roleObj.name : "无" }}</el-tag>
+                        <el-button type="primary"  @click="submitPermisson" size="default">保存</el-button>
+                    </div>
+                    <el-tree
+                        class="filter-tree"
+                        :data="data"
+                        :highlight-current="true"
+                        :props="{ label: 'name' }"
+                        default-expand-all
+                        :filter-node-method="filterNode"
+                        @node-click="nodeClick"
+                        node-key="node_id"
+                        ref="tree"/>
                 </div>
-                <el-tree
-                    class="filter-tree"
-                    :data="data"
-                    :highlight-current="true"
-                    :props="{ label: 'name' }"
-                    default-expand-all
-                    :filter-node-method="filterNode"
-                    @node-click="nodeClick"
-                    node-key="node_id"
-                    ref="tree"/>
-            </div>
-            <div class="auth-item" style="height: calc(100vh - 400px);">
-                <div class="auth-title">
-                    数据授权：
-                    <el-tooltip
-                        class="item"
-                        effect="dark"
-                        content="授权用户可操作的数据范围"
-                        placement="right">
-                        <el-icon><question-filled /></el-icon>
-                    </el-tooltip>
-                </div>
-                <el-select
-                        size="large"
-                        v-show="roleObj.name"
-                        v-model="roleObj.data_range"
-                        @change="dataScopeSelectChange" style="width: 90%;margin: 10px auto;display: block;">
-                    <el-option
-                        v-for="item in dataScopeOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
-                <el-form>
+                <div class="auth-item" style="height: calc(100vh - 430px);">
+                    <div class="auth-title">
+                        数据授权：
+                        <el-tooltip
+                            class="item"
+                            effect="dark"
+                            content="授权用户可操作的数据范围"
+                            placement="right">
+                            <el-icon><question-filled /></el-icon>
+                        </el-tooltip>
+                    </div>
+                    <el-select
+                            size="large"
+                            v-show="roleObj.name"
+                            v-model="roleObj.data_range"
+                            @change="dataScopeSelectChange" style="width: 90%;margin: 10px auto;display: block;">
+                        <el-option
+                            v-for="item in dataScopeOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
                     <el-form-item>
                         <el-tree
                         v-show="roleObj.data_range === 4"
@@ -55,24 +56,20 @@
                         :check-strictly="true"
                         :props="{ label: 'name',children: 'children', disabled: 'disabled'}"/>
                     </el-form-item>
-                </el-form>
 
-
+                </div>
             </div>
-        </div>
-        <div class="auth-item" style="height: calc(100vh - 100px);">
-            <div class="auth-title">
-                菜单授权：
-                <el-tooltip
-                    effect="dark"
-                    content="授权用户在菜单中可操作的范围"
-                    placement="right">
-                    <el-icon><question-filled /></el-icon>
-                </el-tooltip>
-            </div>
-            <div style="margin: 20px">
-
-                <el-form>
+            <div class="auth-item" style="height: calc(100vh - 130px);">
+                <div class="auth-title">
+                    菜单授权：
+                    <el-tooltip
+                        effect="dark"
+                        content="授权用户在菜单中可操作的范围"
+                        placement="right">
+                        <el-icon><question-filled /></el-icon>
+                    </el-tooltip>
+                </div>
+                <div style="margin: 20px;">
                     <el-form-item>
                         <el-tree
                             ref="menuTree"
@@ -82,13 +79,14 @@
                             show-checkbox
                             :expand-on-click-node="false"
                             :default-checked-keys="menuCheckedKeys"
-                            :check-on-click-node="true"
+                            :check-on-click-node="false"
                             :check-strictly="true"
-                            empty-text="请先选择角色">
+                            empty-text="请先选择角色"
+                            @check-change="handleCheckClick">
                              <template v-slot="{ node, data }">
                                   <span class="custom-tree-node" >
                                     <div class="menu-data">
-                                      <div style="margin-right: 50px;line-height: 40px">{{ data.name }}</div>
+                                      <div style="margin-right: 50px">{{ data.name }}</div>
                                       <div>
                                         <el-checkbox
                                             v-for="(item, index) in data.menuPermission"
@@ -100,9 +98,10 @@
                              </template>
                         </el-tree>
                     </el-form-item>
-                </el-form>
+                </div>
             </div>
         </div>
+        </el-form>
     </div>
 </template>
 
@@ -281,8 +280,8 @@
             },
             // 获取部门数据
             getDeptData () {
-                apiSystemDept({page:1,limit:9999}).then((ret) => {
-                     ret.data.data.forEach(item=>{
+                apiSystemDept({page:1,limit:9999}).then((res) => {
+                     res.data.data.forEach(item=>{
                          item.disabled=false
                      })
                     // this.deptOptions = ret.data.data
@@ -304,6 +303,27 @@
                     // this.$refs.dept.setCheckedKeys([]);
                 }
             },
+            /**
+             * 菜单树点击,全选权限部分数据
+             * @param data
+             */
+            handleCheckClick(data, checked) {
+                // console.log(data)
+                // console.log(checked)
+              const {
+                menuPermission,
+                children
+              } = data
+              for (let item of menuPermission) {
+                // this.$set(item, 'checked', checked)
+                  item.checked=checked
+              }
+              if (children) {
+                for (let item of children) {
+                  this.$refs.menuTree.setChecked(item.id, checked)
+                }
+              }
+            },
 
         },
         watch: {
@@ -319,8 +339,9 @@
         width: 100%;
     }
     .auth-title{
+        display: flex;
         font-size: 15px;
-        background: #f1f1f1;
+        background: var(--l-headertitle-bg);
         padding: 15px;
         .el-tooltip{
             cursor: pointer;
@@ -337,12 +358,12 @@
         column-gap: 10px;
         .auth-item{
             flex: 1;
-            background: #ffffff;
+            background: var(--el-bg-color);
             /*&:last-child{*/
             /*    flex: 2;*/
             /*}*/
             .auth-item-header{
-                background: #f1f1f1;
+                background: var(--l-headertitle-bg);
                 padding: 6.5px 15px;
                 display: flex;
                 justify-content: space-between;

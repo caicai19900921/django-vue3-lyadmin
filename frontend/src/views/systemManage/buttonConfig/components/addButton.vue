@@ -8,7 +8,7 @@
             :destroy-on-close="true"
             :close-on-click-modal="false"
             :before-close="handleClose">
-        <el-form :inline="true" :model="formData" :rules="rules" ref="rulesForm" label-position="right" label-width="130px">
+        <el-form :inline="true" :model="formData" :rules="rules" ref="rulesForm" label-position="right" label-width="auto">
             <div style="display: flex;align-items: center;">
                 <el-form-item label="名称：" prop="value">
                 <el-select v-model="formData.value" filterable placeholder="请选择" style="width: 300px"
@@ -83,7 +83,9 @@
                     {id:0,name:'GET'},
                     {id:1,name:'POST'},
                     {id:2,name:'PUT'},
-                    {id:3,name:'DELETE'}
+                    {id:3,name:'DELETE'},
+                    {id:4,name:'OPTIONS'},
+                    {id:5,name:'WS'},
                 ]
             }
         },
@@ -112,7 +114,6 @@
                 }
             },
             submitData() {
-                console.log(this.formData,'this.formData------')
                 let param = {
                     ...this.formData
                 }

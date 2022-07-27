@@ -1,13 +1,12 @@
 <template>
     <div>
-        <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-bottom: 20px">
+        <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-bottom: 16px;margin-top: 10px;">
             <el-breadcrumb-item :to="{ path: '/menuManage' }">菜单管理</el-breadcrumb-item>
             <el-breadcrumb-item v-if="$route.params.name">{{$route.params.name}}</el-breadcrumb-item>
         </el-breadcrumb>
 
         <el-table
-            size="small"
-            height="calc(100vh - 140px)"
+            height="calc(100vh - 150px)"
             border
             row-key="id"
             :data="tableData"
@@ -59,6 +58,8 @@
                     {id:1,name:'POST'},
                     {id:2,name:'PUT'},
                     {id:3,name:'DELETE'},
+                    {id:4,name:'OPTIONS'},
+                    {id:5,name:'WS'},
                 ]
             }
         },

@@ -16,6 +16,8 @@ import mitt from 'mitt'
 
 //导入自定义css
 import './assets/css/common.scss'
+//elementplus暗黑主题从（element-plus/theme-chalk/dark/css-vars.css）拷贝
+import './assets/css/elementplus-theme-dark-css-vars.css'
 
 import App from './App.vue'
 import store from './store'
@@ -32,8 +34,10 @@ app.config.globalProperties.axios = axios
 app.config.globalProperties.$Bus = new mitt()
 
 //引入状态管理
-import {isShowBtn} from './utils/util'
+import {isShowBtn,hasPermission,formatUnitSize} from './utils/util'
 app.config.globalProperties.isShowBtn = isShowBtn
+app.config.globalProperties.hasPermission = hasPermission
+app.config.globalProperties.formatUnitSize = formatUnitSize
 // 过滤器
 import * as custom from './utils/util'
 Object.keys(custom).forEach(key => {
@@ -51,7 +55,7 @@ Object.keys(Icons).forEach((key) => {
 import directivePlugin from '@/utils/directive.js'
 
 app.use(ElementPlus,{
-  size: 'default',  // 默认控件尺寸
+  size: 'default',  // 默认控件尺寸default
   zIndex: 3000,  // 弹出组件的zIndex
   locale: zhCn,
 })

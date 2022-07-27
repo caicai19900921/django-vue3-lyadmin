@@ -1,64 +1,58 @@
 <template>
-    <div v-dialogDrag>
-    <el-dialog
-            :title="loadingTitle"
-            v-model="dialogVisible"
-            width="560px"
-            center
-            :destroy-on-close="true"
-            :close-on-click-modal="false"
-            :before-close="handleClose">
-        <el-form :inline="false" :model="formData" ref="rulesForm" label-position="right" label-width="130px">
-            <el-form-item label="用户头像：">
-                <img :src="formData.avatar ? formData.avatar : defaultImg" style="width: 60px;height:60px" :onerror="defaultImg">
-
-<!--                <el-upload-->
-<!--                        class="avatar-uploader"-->
-<!--                        action=""-->
-<!--                        :show-file-list="false"-->
-<!--                        :http-request="imgUploadRequest"-->
-<!--                        :on-success="imgUploadSuccess"-->
-<!--                        :before-upload="imgBeforeUpload">-->
-<!--                    <img v-if="formData.img" :src="formData.img" class="avatar">-->
-<!--                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>-->
-<!--                </el-upload>-->
-            </el-form-item>
-            <el-form-item label="用户名：" prop="username">
-                {{formData.username}}
-            </el-form-item>
-            <el-form-item label="用户昵称：" prop="nickname">
-                {{formData.nickname}}
-            </el-form-item>
-            <el-form-item label="手机号：" prop="mobile">
-                {{formData.mobile}}
-            </el-form-item>
-            <el-form-item label="创建时间：" prop="mobile">
-                {{formData.create_datetime}}
-            </el-form-item>
-            <el-form-item label="更新时间：" prop="mobile">
-                {{formData.update_datetime}}
-            </el-form-item>
-            <el-form-item label="状态：" prop="is_active">
-                <el-switch
+    <div>
+        <ly-dialog v-model="dialogVisible" :title="loadingTitle" width="560px" :before-close="handleClose">
+            <el-form :inline="false" :model="formData" :rules="rules" ref="rulesForm" label-position="right" label-width="auto">
+                <el-form-item label="用户头像：">
+                    <el-upload
+                            class="avatar-uploader"
+                            action=""
+                            :show-file-list="false"
+                            ref="uploadDefaultImage"
+                            :http-request="imgUploadRequest"
+                            :on-success="imgUploadSuccess"
+                            :before-upload="imgBeforeUpload">
+                        <img v-if="formData.avatar" :src="formData.avatar" class="avatar" :onerror="defaultImg">
+                        <el-icon v-else class="avatar-uploader-icon" size="medium"><Plus /></el-icon>
+                    </el-upload>
+                </el-form-item>
+                <el-form-item label="用户名：" prop="username">
+                    <el-input v-model="formData.username"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名：" prop="name">
+                    <el-input v-model="formData.name"></el-input>
+                </el-form-item>
+                <el-form-item label="用户昵称：" prop="nickname">
+                    <el-input v-model="formData.nickname"></el-input>
+                </el-form-item>
+                <el-form-item label="密码：" prop="password">
+                    <el-input v-model="formData.password" :show-password="true"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号：" prop="mobile">
+                    <el-input v-model="formData.mobile"></el-input>
+                </el-form-item>
+                <el-form-item label="状态：" prop="is_active">
+                    <el-switch
                         v-model="formData.is_active"
                         active-color="#13ce66"
-                        inactive-color="#ff4949" disabled>
-                </el-switch>
-            </el-form-item>
-        </el-form>
-        <template #footer>
-            <el-button @click="handleClose" :loading="loadingSave">取消</el-button>
-<!--            <el-button type="primary" @click="submitData" :loading="loadingSave">确定</el-button>-->
-        </template>
-    </el-dialog>
+                        inactive-color="#ff4949">
+                    </el-switch>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="handleClose" :loading="loadingSave">取消</el-button>
+                <el-button type="primary" @click="submitData" :loading="loadingSave">确定</el-button>
+            </template>
+        </ly-dialog>
     </div>
 </template>
 
 <script>
-    import {apiSystemUserAdd,apiSystemUserEdit,apiSystemRole,apiSystemDept} from "@/api/api";
+    import {UsersUsersAdd,UsersUsersEdit,platformsettingsUploadPlatformImg} from "@/api/api";
+    import LyDialog from "../../../components/dialog/dialog";
     export default {
-        emits: ['refreshData'],
         name: "addUser",
+        components: {LyDialog},
+        emits: ['refreshData'],
         data() {
             return {
                 dialogVisible:false,
@@ -66,21 +60,34 @@
                 loadingTitle:'',
                 defaultImg:'this.src="'+require('../../../assets/img/avatar.jpg')+'"',
                 formData:{
-                    name:'',
-                    nickname:'',
                     username:'',
+                    nickname:'',
                     mobile:'',
-                    create_datetime:'',
-                    update_datetime:'',
                     is_active:true,
                     avatar:''
+                },
+                rules:{
+                    username: [
+                        {required: true, message: '请输入用户名',trigger: 'blur'}
+                    ],
+                    // nickname: [
+                    //     {required: true, message: '请输入昵称',trigger: 'blur'}
+                    // ],
+                    password: [
+                        {required: true, message: '请输入密码',trigger: 'blur'}
+                    ],
+                    mobile: [
+                        {required: true, message: '请输入手机号',trigger: 'blur'}
+                    ],
+                    is_active: [
+                        {required: true, message: '请选择是否启用',trigger: 'blur'}
+                    ]
                 },
                 rolelist:[],
                 options:[],
             }
         },
         methods:{
-
             handleClose() {
                 this.dialogVisible=false
                 this.loadingSave=false
@@ -89,15 +96,21 @@
             addUserFn(item,flag) {
                 this.loadingTitle=flag
                 this.dialogVisible=true
-                this.formData=item ? item : {
-                    name:'',
-                    nickname:'',
-                    username:'',
-                    mobile:'',
-                    create_datetime:'',
-                    update_datetime:'',
-                    is_active:true,
-                    avatar:''
+                if(item){
+                    delete this.rules.password
+                    this.formData = item
+                }else{
+                    this.rules.password = [
+                        {required: true, message: '请输入密码',trigger: 'blur'}
+                    ]
+                   this.formData={
+                        name:'',
+                        nickname:'',
+                        username:'',
+                        mobile:'',
+                        is_active:true,
+                        avatar:''
+                   }
                 }
             },
             submitData() {
@@ -107,8 +120,9 @@
                         let param = {
                             ...this.formData
                         }
+                        // param.role = param.role?param.role.split(" "):[]
                         if(this.formData.id){
-                            apiSystemUserEdit(param).then(res=>{
+                            UsersUsersEdit(param).then(res=>{
                                 this.loadingSave=false
                                 if(res.code ==2000) {
                                     this.$message.success(res.msg)
@@ -119,7 +133,7 @@
                                 }
                             })
                         }else{
-                            apiSystemUserAdd(param).then(res=>{
+                            UsersUsersAdd(param).then(res=>{
                                 this.loadingSave=false
                                 if(res.code ==2000) {
                                     this.$message.success(res.msg)
@@ -142,15 +156,51 @@
                 }
                 return isJPG;
             },
-            async imgUploadRequest(option) {
-                // OSS.ossUploadProductImg(option);
-            },
-            imgUploadSuccess(res) {
-                if (res) {
-                    this.formData.img = res.url
+            async imgUploadRequest(param) {
+                var vm = this
+                let obj= await platformsettingsUploadPlatformImg(param)
+                if(obj.code == 2000) {
+                    let res=''
+                    if (obj.data.data[0].indexOf("://")>=0){
+                        res = obj.data.data[0]
+
+                    }else{
+                        res = url.split('/api')[0]+obj.data.data[0]
+                    }
+                    vm.formData.avatar = res
+                } else {
+                    vm.$message.warning(res.msg)
                 }
             },
+            imgUploadSuccess() {
+                this.$refs.uploadDefaultImage.clearFiles()
+            }
         }
     }
 </script>
+<style scoped>
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+      border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 128px;
+      height: 128px;
+      line-height: 128px;
+      text-align: center;
+    }
+    .avatar {
+      width: 128px;
+      height: 128px;
+      display: block;
+    }
+</style>
 

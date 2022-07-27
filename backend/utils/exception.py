@@ -9,8 +9,9 @@ import traceback
 from django.db.models import ProtectedError
 from django.db.utils import DatabaseError
 from rest_framework import exceptions
-from rest_framework.exceptions import APIException as DRFAPIException, AuthenticationFailed,NotAuthenticated,ValidationError
+from rest_framework.exceptions import APIException as DRFAPIException, AuthenticationFailed,NotAuthenticated,ValidationError,NotFound
 from rest_framework.views import set_rollback
+from django.http.response import Http404
 
 from utils.jsonResponse import ErrorResponse
 
@@ -28,13 +29,17 @@ def CustomExceptionHandler(ex, context):
     """
     msg = ''
     code = 4000
-
     if isinstance(ex, AuthenticationFailed):
         code = 4001
         msg = ex.detail
     elif isinstance(ex, NotAuthenticated):
         code = 4001
         msg = ex.detail
+    # elif isinstance(ex,NotFound):
+    #     if str(ex)=="无效页面。":
+    #         msg="暂无数据"
+    #     else:
+    #         msg = str(ex)
     elif isinstance(ex, exceptions.ValidationError):
         msg = ex.detail
         errorMsg = msg
@@ -46,6 +51,14 @@ def CustomExceptionHandler(ex, context):
                     msg = errorMsg[key][0]
         except:
             msg = errorMsg[0]
+    elif 'django.db.utils.IntegrityError' in str(type(ex)):
+        msg=str(ex)
+        res = msg.split(', ')
+        if res[0] == '(1062':
+            msg="数据有重复，请检查后重试:%s"%msg
+    elif isinstance(ex,Http404):
+        code = 404
+        msg = "404错误：您访问的地址不存在"
     elif isinstance(ex, DRFAPIException):
         set_rollback()
         msg = str(ex.detail)

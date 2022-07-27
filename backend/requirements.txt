@@ -59,6 +59,12 @@ xlrd
 xlwt
 zope.interface
 hiredis
-python-alipay-sdk
-pycryptodomex
+python-alipay-sdk==1.8.0
+pycryptodomex>=3.14.1
 jpush
+tencentcloud-sdk-python
+psutil
+chardet
+channels
+channels_redis
+paramiko

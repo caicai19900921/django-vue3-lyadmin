@@ -1,27 +1,34 @@
 <template>
-    <div>
-        <div class="tableSelect">
+    <div :class="{'ly-is-full':isFull}">
+        <div class="tableSelect" ref="tableSelect">
             <el-form :inline="true" :model="formInline" label-position="left">
                 <el-form-item label="">
-                    <el-button size="default" type="primary" @click="addModule" v-show="isShowBtn('platformSettingsother','其他设置','Create')">新增</el-button>
+                    <el-button type="primary" @click="addModule"  icon="Plus" v-show="isShowBtn('platformSettingsother','其他设置','Create')">新增</el-button>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-button size="default" @click="handleDelete" type="danger" :disabled="multiple" v-show="isShowBtn('platformSettingsother','其他设置','Delete')">删除</el-button>
+                    <el-button @click="handleDelete" type="danger" :disabled="multiple" icon="Delete" v-show="isShowBtn('platformSettingsother','其他设置','Delete')">删除</el-button>
+                </el-form-item>
+                <el-form-item label="">
+                    <el-switch v-model="is_allow_fronted" active-color="#13ce66" inactive-color="#ff4949" active-text="前端访问已开启" inactive-text="前端访问已关闭"  @change="handleSuperOperate"></el-switch>
                 </el-form-item>
             </el-form>
         </div>
         <el-form class="table">
-            <el-table size="small" height="calc(100vh - 260px)" border :data="tableData" ref="tableref" v-loading="loadingPage" style="width: 100%" tooltip-effect="dark" @selection-change="handleSelectionChange">
-<!--                <el-table-column type="index" width="60" align="center" label="序号"></el-table-column>-->
+            <el-table  :height="'calc('+(tableHeight)+'px)'" border :data="tableData" ref="tableref" v-loading="loadingPage" style="width: 100%" tooltip-effect="dark" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center" disabled='false'></el-table-column>
+                <el-table-column type="index" width="60" align="center" label="序号">
+                    <template #default="scope">
+                        <span v-text="getIndex(scope.$index)"></span>
+                    </template>
+                </el-table-column>
                 <!--<el-table-column min-width="120" prop="name" label="图片">-->
                     <!--<template #default="scope">-->
                         <!--<el-image  fit="fill" :src="scope.row.image" style="width: 60px;height: 60px" :preview-src-list="[scope.row.image]" v-if="scope.row.image"></el-image>-->
                     <!--</template>-->
                 <!--</el-table-column>-->
                 <el-table-column min-width="120" prop="name" label="名称"></el-table-column>
-                <el-table-column min-width="140" prop="key" label="键名"></el-table-column>
                 <el-table-column min-width="180" prop="value" label="键值" show-overflow-tooltip></el-table-column>
+                <el-table-column min-width="140" prop="key" label="键名"></el-table-column>
                 <el-table-column min-width="60" prop="sort" label="排序"></el-table-column>
                 <el-table-column min-width="80" label="状态">
                     <template #default="scope">
@@ -31,6 +38,16 @@
                 </el-table-column>
                 <el-table-column min-width="150" prop="create_datetime" label="创建时间"></el-table-column>
                 <el-table-column label="操作" fixed="right" width="180">
+                    <template #header>
+                        <div style="display: flex;justify-content: space-between;align-items: center;">
+                            <div>操作</div>
+                            <div @click="setFull">
+                                <el-tooltip content="全屏" placement="bottom">
+                                    <el-icon ><full-screen /></el-icon>
+                                </el-tooltip>
+                            </div>
+                        </div>
+                    </template>
                     <template #default="scope">
                         <!--                        v-show="isShowBtn('recyclCategoryParent','一级分类','Update')"-->
                         <span class="table-operate-btn" @click="handleEdit(scope.row,'edit')" v-show="isShowBtn('platformSettingsother','其他设置','Update')">编辑</span>
@@ -46,8 +63,8 @@
 </template>
 <script>
     import PaginationModule from "@/components/Pagination";
-    import {dateFormats} from "@/utils/util";
-    import {platformsettingsOther,platformsettingsOtherDelete} from '@/api/api'
+    import {dateFormats,getTableHeight} from "@/utils/util";
+    import {platformsettingsOther,platformsettingsOtherDelete,superOerateGet,superOerateSet} from '@/api/api'
     import AddModuleOther from "./components/addModuleOther";
     export default {
         components:{
@@ -57,6 +74,8 @@
         name:'PlatformSettingsother',
         data() {
             return {
+                isFull:false,
+                tableHeight:500,
                 loadingPage:false,
                 // 选项框选中数组
                 ids: [],
@@ -70,6 +89,7 @@
                     page: 1,
                     limit: 10,
                 },
+                is_allow_fronted:true,
                 pageparm: {
                     page: 1,
                     limit: 10,
@@ -84,11 +104,17 @@
             }
         },
         methods:{
+            // 表格序列号
+            getIndex($index) {
+                // (当前页 - 1) * 当前显示数据条数 + 当前行数据的索引 + 1
+                return (this.pageparm.page-1)*this.pageparm.limit + $index +1
+            },
+            setFull(){
+                this.isFull=!this.isFull
+            },
             //多选项框被选中数据
             handleSelectionChange(selection) {
-                console.log(selection,'selection----')
-                this.ids = selection//.map(item => item.id);
-                console.log(this.ids,'this.idas')
+                this.ids = selection.map(item => item.id);
                 this.single = selection.length !== 1;
                 this.multiple = !selection.length;
             },
@@ -112,7 +138,7 @@
                 })
             },
             changeStatus(row) {
-                console.log(row,'row----')
+                // console.log(row,'row----')
             },
             addModule() {
                 this.$refs.AddModuleFlag.addModuleFn(null,'新增')
@@ -121,7 +147,7 @@
                 if(flag=='edit') {
                     this.$refs.AddModuleFlag.addModuleFn(row,'编辑')
                 }
-                if(flag=='delete') {
+                else if(flag=='delete') {
                     let vm = this
                     vm.$confirm('确定删除该数据吗？',{
                         closeOnClickModal:false
@@ -139,7 +165,45 @@
                     })
                 }
             },
+            //关闭前端方法开始----------------
+            getSuperOperate(){
+                let vm = this
+                superOerateGet().then(res => {
+                     if(res.code ==2000) {
+                         vm.is_allow_fronted = res.data.data.is_allow
+                     }else{
+                         vm.$message.warning("获取前端访问权限失败")
+                     }
+                 })
+            },
+            handleSuperOperate(){
+                let vm = this
+                let flat = vm.is_allow_fronted
+                vm.is_allow_fronted = !vm.is_allow_fronted
+                let temp_is_allow = 1
+                vm.$confirm('确定要改变前端访问状态吗？',{
+                        closeOnClickModal:false
+                    }).then(res=>{
+                        flat ? vm.is_allow_fronted = true : vm.is_allow_fronted = false
+                        if(vm.is_allow_fronted){
+                            temp_is_allow = 1
+                        }else{
+                            temp_is_allow = 0
+                        }
+                        superOerateSet({is_allow:temp_is_allow}).then(res => {
+                             if(res.code ==2000) {
+                                 vm.is_allow_fronted = res.data.data.is_allow
+                                 vm.$message.warning(res.msg)
+                             }else{
+                                 flat ? vm.is_allow_fronted = false : vm.is_allow_fronted = true
+                                 vm.$message.warning(res.msg)
+                             }
+                         })
+                    }).catch(()=>{
 
+                    })
+            },
+            //关闭前端方法结束----------------
             callFather(parm) {
                 this.formInline.page = parm.page
                 this.formInline.limit = parm.limit
@@ -174,9 +238,19 @@
                 }
                 this.search()
             },
+            // 计算搜索栏的高度
+            listenResize() {
+				this.$nextTick(() => {
+				    this.getTheTableHeight()
+				})
+			},
+            getTheTableHeight(){
+               this.tableHeight =  getTableHeight(this.$refs.tableSelect.offsetHeight)
+            }
         },
         created() {
             this.getData()
+            this.getSuperOperate()
         },
         timers(val){
             if (val) {
@@ -188,19 +262,16 @@
             }
             this.getData()
         },
-        //解决table 表格缩放错位问题
-        handleResize() {
-            this.$nextTick(()=> {
-                this.$refs.tableref.doLayout();
-            });
-        },
         mounted() {
-            //解决table 表格缩放错位问题
-            window.addEventListener('resize', this.handleResize);
+            // 监听页面宽度变化搜索框的高度
+            window.addEventListener('resize', this.listenResize);
+            this.$nextTick(() => {
+              this.getTheTableHeight()
+            })
         },
         unmounted() {
-            //解决table 表格缩放错位问题
-             window.removeEventListener("resize", this.handleResize);
+              // 页面销毁，去掉监听事件
+			window.removeEventListener("resize", this.listenResize);
         },
     }
 </script>

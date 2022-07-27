@@ -3,19 +3,25 @@ import { ElMessage } from 'element-plus'
 require("babel-polyfill");
 import { url } from './url';
 import router from '../router';
+import store from '../store'
 
 var request = axios.create({
-  timeout: 120000,
+    timeout: 60000,
 });
 
 function ajax(opt,method){
-  var token= sessionStorage.getItem('logintoken')
+  var token= store.getters.getLogintoken
   // var timestamp=new Date().getTime();
   var params;
 
   if(opt.params){
     //对传入的参数进行深拷贝，防止传入的参数对象被页面上其他逻辑改变，导致签名错误
-    params=JSON.parse(JSON.stringify(opt.params));
+    if (Object.prototype.toString.call(opt.params) != '[object FormData]') {
+      // 不是formdata类型
+      params = JSON.parse(JSON.stringify(opt.params));
+    }else{//formdata类型
+      params= opt.params
+    }
     if(method=='GET') {
       params={
         ...params,
@@ -51,7 +57,6 @@ function ajax(opt,method){
 
       method==="PUT"&&(config.params=params);
       return new Promise((resolve,reject)=>{
-          // console.log(config,'config')
           request({
                 url: config.url,
                 method: method,
@@ -62,8 +67,8 @@ function ajax(opt,method){
               }).then(res=>{
               if(res.data.code==4001){
                   localStorage.clear();
-                  router.replace("/login");
                   sessionStorage.clear();
+                  router.replace("/login");
                   reject(res.data)
               }else{
                   resolve(res.data)
@@ -168,9 +173,16 @@ export function ajaxGetDetailByID (opt) {
     return ajax(opt,"GET2")
 }
 
+//websocket获取jwt请求token
+export function getJWTAuthorization() {
+    var token= store.getters.getLogintoken
+    var jwt = 'JWTlybbn' + token
+    return jwt
+}
+
 export function reqExpost (method, url, params) {
   // const timestamp = new Date().getTime().toString();
-  let token = sessionStorage.getItem('logintoken')
+  let token = store.getters.getLogintoken
   for (let key in params){
     if(params[key]==null || params[key] == 'undefined' ||  params[key]==''){
       delete params[key]
@@ -199,7 +211,7 @@ export function reqExpost (method, url, params) {
 export function uploadImg (param) {
     let formData = new FormData()
     formData.append('file', param.params.file)
-    let token= sessionStorage.getItem('logintoken')
+    let token= store.getters.getLogintoken
     return axios({
         method: 'post',
         url: url+param.url ,

@@ -1,4 +1,4 @@
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, menu, nav, output, ruby, section, summary, time, mark, audio, video, input {margin: 0;padding: 0;border: 0;font-size: 100%;font-weight: normal;vertical-align: baseline;}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, menu, nav, output, ruby, section, summary, time, mark, audio, video, input {margin: 0;padding: 0;border: 0;font-size: 100%;vertical-align: baseline;}
 article, aside, details, figcaption, figure, footer, header, menu, nav, section {display: block;}
 body {line-height: 1;height: 100%;}
 blockquote, q {quotes: none;}
@@ -39,12 +39,17 @@ li {
 html, body {
   width: 100%;
   height: 100%;
-  background: #f5f6fa;
+  //background: #f5f6fa;
+  background: var(--l-app-bg);
 }
 
 body {
   -webkit-text-size-adjust: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  font-family: Lato, "PingFang SC", "Microsoft YaHei", sans-serif;
+  &.hidden {
+    overflow: hidden;
+  }
 }
 
 /*显示省略号*/
@@ -63,30 +68,24 @@ body {
 input, textarea {
   outline: none;
   resize: none;
-  text-indent: 10px;
-  color: #9E9EA0;
 }
 
 ::-webkit-input-placeholder {
-  font-size: 10px;
-  color: #9E9EA0; /* 使用webkit内核的浏览器 */
+  font-size: 10px;/* 使用webkit内核的浏览器 */
 }
 
 :-moz-placeholder {
   font-size: 10px;
-  color: #9E9EA0;
 }
 
 /* Firefox版本4-18 */
 ::-moz-placeholder {
   font-size: 10px;
-  color: #9E9EA0;
 }
 
 /* Firefox版本19+ */
 :-ms-input-placeholder {
   font-size: 10px;
-  color: #9E9EA0;
 }
 .el-radio {
   margin-right: 10px !important;
@@ -108,9 +107,6 @@ input, textarea {
   font-size: 12px!important;
 
 }
-*{
-  font-family:"\5FAE\8F6F\96C5\9ED1","Microsoft Yahei","Hiragino Sans GB",tahoma,arial,"\5B8B\4F53"  ;
-}
 
 .submenu.el-menu--horizontal>.el-sub-menu .el-sub-menu__title{
   text-align: center;
@@ -122,12 +118,14 @@ input, textarea {
   cursor: pointer
 }
 .tableSelect{
-  background: #ffffff;
-  padding: 20px;
+  background: var(--l-searchtoolbar-bg);
+  padding: 12px;
   box-shadow: 0 0 5px #cccccc;
   margin-bottom: 10px;
   .el-form{
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
   }
   .el-form-item{
     margin: 5px !important;
@@ -137,11 +135,19 @@ input, textarea {
   color: #409eff;
   cursor: pointer;
   margin-right: 10px;
-  font-size: 13px;
+  //font-size: 14px;
   &.color99{
     color: #999999;
     cursor: default;
   }
+}
+.lynowrap{
+  white-space: nowrap;
+  display:-webkit-box;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient:vertical;
 }
 .el-dialog-footer{
   text-align: center;
@@ -185,3 +191,78 @@ input, textarea {
   margin-left: 10px;
   vertical-align: bottom;
 }
+.ly-is-full{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 99;
+    background:var(--el-bg-color) ;
+}
+
+/* ----- 暗黑主题 ----- */
+:root {
+    /* ----- 应用 ----- */
+    // 应用背景色
+    --l-app-bg: #f5f6fa;
+    // 主区域背景色
+    --l-main-bg: #f5f6fa;
+
+    /* ----- 顶部 ----- */
+    // 背景色
+    --l-header-bg: #3C444D;
+
+    /* ----- 主导航 ----- */
+    // 菜单鼠标悬浮背景色
+    --l-main-sidebar-menu-hover-bg: #247af3;
+
+    /* ----- 标签页 ----- */
+    --l-changetab-bg: #fff;
+    --l-changetab-border: #fff;
+    --l-changetab-right-menu: var(--el-bg-color);
+    --l-changetab-right-menu-hover-bg: var(--el-color-primary-light-9);
+
+    /* ----- 搜索条件栏目 ----- */
+    --l-searchtoolbar-bg: var(--el-bg-color);
+
+    /* ----- 标题栏目 ----- */
+    --l-headertitle-bg: #f1f1f1;
+
+    /* ----- 进度条 ----- */
+    --l-nprogress-color: var(--el-color-primary);
+
+    /* ----- 暗黑模式 ----- */
+    &.dark {
+        /* ----- 应用 ----- */
+        // 应用背景色
+        --l-app-bg: var(--el-bg-color);
+        // 主区域背景色
+        --l-main-bg: var(--el-bg-color-page);
+
+        /* ----- 顶部 ----- */
+        // 背景色
+        --l-header-bg: var(--el-bg-color);
+
+        /* ----- 标签页 ----- */
+        --l-changetab-bg: var(--el-bg-color);
+        --l-changetab-border: var(--el-bg-color);
+        --l-changetab-right-menu: var(--el-bg-color);
+        --l-changetab-right-menu-hover-bg: var(--el-color-info-light-3);
+
+        /* ----- 主导航 ----- */
+        // 菜单鼠标悬浮背景色
+        --l-main-sidebar-menu-hover-bg: var(--el-color-primary-light-5);
+
+        /* ----- 搜索条件栏目 ----- */
+        --l-searchtoolbar-bg: var(--el-bg-color);
+
+        /* ----- 标题栏目 ----- */
+        --l-headertitle-bg: var(--el-border-color-light);
+
+        /* ----- 进度条 ----- */
+        --l-nprogress-color: var(--el-color-primary);
+    }
+}
+
+

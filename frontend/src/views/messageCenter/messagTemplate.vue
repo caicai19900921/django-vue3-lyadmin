@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="tableSelect">
+        <div class="tableSelect" ref="tableSelect">
             <el-form :inline="true" :model="formInline" label-position="left">
                 <el-form-item label="标题：">
                     <el-input size="default" v-model.trim="formInline.title" maxlength="60"  clearable placeholder="消息标题" @change="search" style="width:200px"></el-input>
@@ -21,7 +21,7 @@
                 <el-form-item label=""><el-button size="default" @click="addModule" type="primary">新增</el-button></el-form-item>
             </el-form>
         </div>
-        <el-table size="small" height="calc(100vh - 260px)" border :data="tableData" ref="tableref" v-loading="loadingPage" style="width: 100%">
+        <el-table  :height="'calc('+(tableHeight)+'px)'" border :data="tableData" ref="tableref" v-loading="loadingPage" style="width: 100%">
             <el-table-column type="index" width="60" align="center" label="序号"></el-table-column>
             <el-table-column min-width="90" prop="code" label="模板code"></el-table-column>
             <el-table-column min-width="120" prop="title" label="模板title"></el-table-column>
@@ -54,7 +54,7 @@
 <script>
     import addModule from "./components/addModuleTemplate";
     import Pagination from "@/components/Pagination";
-    import {dateFormats} from "@/utils/util";
+    import {dateFormats,getTableHeight} from "@/utils/util";
     import {messagesMessagetemplate,messagesMessagetemplateDelete} from '@/api/api'
     export default {
         components:{
@@ -64,6 +64,7 @@
         name:'messagTemplate',
         data() {
             return {
+                tableHeight:500,
                 loadingPage:false,
                 formInline:{
                     page: 1,
@@ -86,7 +87,7 @@
                 this.$refs.addModuleFlag.addModuleFn(null,'新增')
             },
             changeStatus(row) {
-                console.log(row,'row----')
+                // console.log(row,'row----')
             },
             handleEdit(row,flag) {
                 let vm = this
@@ -134,23 +135,39 @@
                      }
                  })
             },
+            //解决table 表格缩放错位问题
+            handleResize() {
+                this.$nextTick(()=> {
+                    this.$refs.tableref.doLayout();
+                });
+            },
+            // 计算搜索栏的高度
+            listenResize() {
+				this.$nextTick(() => {
+				    this.getTheTableHeight()
+				})
+			},
+            getTheTableHeight(){
+               this.tableHeight =  getTableHeight(this.$refs.tableSelect.offsetHeight)
+            }
         },
         created() {
             this.getData()
         },
-        //解决table 表格缩放错位问题
-        handleResize() {
-            this.$nextTick(()=> {
-                this.$refs.tableref.doLayout();
-            });
-        },
         mounted() {
             //解决table 表格缩放错位问题
             window.addEventListener('resize', this.handleResize);
+            // 监听页面宽度变化搜索框的高度
+            window.addEventListener('resize', this.listenResize);
+            this.$nextTick(() => {
+              this.getTheTableHeight()
+            })
         },
         unmounted() {
             //解决table 表格缩放错位问题
              window.removeEventListener("resize", this.handleResize);
+              // 页面销毁，去掉监听事件
+            window.removeEventListener("resize", this.listenResize);
         },
     }
 </script>

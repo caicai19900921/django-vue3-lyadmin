@@ -6,7 +6,7 @@
 
 <script>
 import {url} from '@/api/url'
-import { onMounted, reactive, toRefs, watch } from 'vue'
+import { onMounted,onUnmounted, reactive, toRefs, watch,nextTick } from 'vue'
 import axios from 'axios'
 // 引入tinymce编辑器
 import Editor from '@tinymce/tinymce-vue'
@@ -14,7 +14,9 @@ import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入则不�
 // 导入配置文件
 import './teditorjs/importTinymce'
 import { init } from './teditorjs/config'
-let token = sessionStorage.getItem('logintoken')
+import { useStore } from "vuex";
+// let token = localStorage.getItem('logintoken')
+let token = ""
 
 export default {
   name: 'tEditor',
@@ -36,7 +38,7 @@ export default {
     style: {
       type: Object,
       default: () => {
-        return { width: '100%', heigth: '400' }
+        return { width: '100%', heigth: '300' }
       }
     },
     // 图片上传服务器地址
@@ -51,10 +53,18 @@ export default {
       contentValue: props.modelValue, // 绑定文本
       timeout: null,
     })
+    const store = useStore()//useStore必须再setup中使用
+    token = store.getters.getLogintoken
 
     onMounted(() => {
-      tinymce.init({})
+        nextTick(()=>{
+            tinymce.init({})
+        })
     })
+      onUnmounted(()=>{
+          tinymce.remove()
+      })
+
 
     // 侦听文本变化并传给外界
     watch(() => state.contentValue, (n) => {
@@ -142,6 +152,14 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="css" >
+    .my-tinymce{
+        width: 100%;
+    }
+    .tox-notifications-container {
+      display: none;
+    }
+    /*.tox-tinymce-aux {*/
+    /*  z-index: 5000 !important;*/
+    /*}*/
 </style>

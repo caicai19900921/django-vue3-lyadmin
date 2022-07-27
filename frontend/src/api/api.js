@@ -7,7 +7,21 @@ export const login = params => ajaxPost({url: `token/`,params})
 // 获取验证码
 export const getCaptcha = params => ajaxGet({url: `captcha/`,params})
 // 获取菜单
-export const apiSystemWebRouter = params => ajaxGet({url: `system/web_router/`,params})
+export const apiSystemWebRouter = params => ajaxGet({url: `system/menu/web_router/`,params})
+//系统监控
+export const monitorGetSystemInfo = params => ajaxGet({url: `monitor/getsysteminfo/`,params})
+/**
+*终端服务
+ * */
+
+// 终端服务
+export const apiTerminal = params => ajaxGet({url: `terminal/terminal/`,params})
+// 终端服务 -- 新增
+export const apiTerminalAdd = params => ajaxPost({url: `terminal/terminal/`,params})
+// 终端服务 -- 编辑
+export const apiTerminalEdit = params => ajaxPut({url: `terminal/terminal/`,params})
+// 终端服务 -- 删除
+export const apiTerminalDelete = params => ajaxDelete({url: `terminal/terminal/`,params})
 
 /**
 *系统管理
@@ -163,7 +177,8 @@ export const UsersUsersEdit= params => ajaxPut({url: `users/users/`,params})
 export const UsersUsersDelete= params => ajaxDelete({url: `users/users/`,params})
 // 用户管理 禁用用户
 export const UsersUsersdisableEdit= params => ajaxPut({url: `users/users/disableuser/`,params})
-
+// 用户管理 导出
+export const UsersUsersExportexecl= params => ajaxGet({url: `users/users/exportexecl/`,params})
 
 /**
 *平台设置
@@ -189,3 +204,8 @@ export const platformsettingsOtherDelete= params => ajaxDelete({url: `platformse
 
 // 平台设置 图片上传
 export const platformsettingsUploadPlatformImg= params => uploadImg({url: `platformsettings/uploadplatformimg/`,params})
+
+//前端访问操作 获取
+export const superOerateGet= params => ajaxGet({url: `super/operate/`,params})
+//前端访问操作 设置
+export const superOerateSet= params => ajaxPost({url: `super/operate/`,params})

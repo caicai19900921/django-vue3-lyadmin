@@ -57,7 +57,8 @@ class DeptViewSet(CustomModelViewSet):
     """
     queryset = Dept.objects.all()
     serializer_class = DeptSerializer
-    filter_fields = ['status']
+    filterset_fields = ['status']
+    search_fields = ['name', 'owner','phone','email']
 
     def dept_tree(self, request):
         queryset = Dept.objects.exclude(status=0).filter(parent=None)

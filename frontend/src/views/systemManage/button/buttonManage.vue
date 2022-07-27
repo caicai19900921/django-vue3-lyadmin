@@ -1,13 +1,12 @@
 <template>
     <div>
-        <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-bottom: 20px">
+        <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-bottom: 16px;margin-top: 10px;">
             <el-breadcrumb-item :to="{ path: '/menuManage' }">菜单管理</el-breadcrumb-item>
             <el-breadcrumb-item >按钮管理</el-breadcrumb-item>
         </el-breadcrumb>
 
         <el-table
-            size="small"
-            height="calc(100vh - 140px)"
+            height="calc(100vh - 150px)"
             border
             row-key="id"
             :data="tableData"

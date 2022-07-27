@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #other app
+    # 'channels',#websocket
     'django_comment_migrate',
     'rest_framework',
     'django_filters',
@@ -62,6 +63,8 @@ INSTALLED_APPS = [
     'logins',
     'lyusers',
     'platformsettings',
+    'lymonitor',
+    'lywebsocket',
 ]
 
 MIDDLEWARE = [
@@ -96,8 +99,8 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'application.asgi.application'
 WSGI_APPLICATION = 'application.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -120,7 +123,7 @@ DATABASES = {
         'CONN_MAX_AGE':DATABASE_CONN_MAX_AGE,
         'OPTIONS': {
                     'charset':DATABASE_CHARSET,
-                    "init_command": "SET default_storage_engine='INNODB'" #innodb才支持事务
+                    'init_command': 'SET default_storage_engine=INNODB', #innodb才支持事务
                 }
     }
 }
@@ -190,9 +193,25 @@ CACHES = {
         },
 }
 
+
 REDIS_TIMEOUT = 7 * 24 * 60 * 60
 CUBES_REDIS_TIMEOUT = 60 * 60
 NEVER_REDIS_TIMEOUT = 365 * 24 * 60 * 60
+
+CHANNEL_LAYERS = {
+    'default': {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"  # 默认用内存
+    },
+}
+# # 配置channels_redis，windows redis运行后报错：aioredis.errors.ReplyError: ERR unknown command 'BZPOPMIN'，请注释以下配置或升级redis到5.0及以上
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": ["redis://localhost:6379/5"],
+#         },
+#     },
+# }
 
 # session使用的存储方式
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -216,7 +235,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -446,21 +464,22 @@ CAPTCHA_FOREGROUND_COLOR = '#0033FF'  # 前景色
 CAPTCHA_BACKGROUND_COLOR = '#F5F7F4'  # 背景色
 CAPTCHA_NOISE_FUNCTIONS = (
     'captcha.helpers.noise_arcs', # 线
-    'captcha.helpers.noise_dots', # 点
+    # 'captcha.helpers.noise_dots', # 点
 )
 # CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge' #字母验证码
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge' # 加减乘除验证码
 # ================================================= #
 # ******************** 其他配置 ******************** #
 # ================================================= #
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+# DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 API_LOG_ENABLE = True#全局控制日志记录
 # API_LOG_METHODS = 'ALL' # ['POST', 'DELETE']
 API_LOG_METHODS = ['POST', 'UPDATE', 'DELETE', 'PUT']  # ['POST', 'DELETE']
 #日志记录显示的请求模块中文名映射
 API_MODEL_MAP = {
     "/token/": "登录模块",
-    "/api/token/": "登录模块"
+    "/api/token/": "登录模块",
+    "/api/super/operate/":"前端API关闭开启",
 }
 # 表前缀
 TABLE_PREFIX = "lyadmin_"

@@ -33,7 +33,7 @@
     </el-form>
   </div>
 </template>
-<script type="text/ecmascript-6">
+<script >
   import {login,apiSystemWebRouter,getCaptcha} from '../api/api'
   import {systemTree} from "@/utils/menuTree.js"
   import {delCookie, getCookie, setCookie} from '../utils/util'
@@ -62,17 +62,38 @@
     },
     created() {
         //动态添加该页面meta viewport 手机适配
-        document.querySelector("meta[name='viewport']")["content"] = "width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"
+        if(document.querySelector("meta[name='viewport']")){
+            document.querySelector("meta[name='viewport']")["content"] = "width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"
+        }
         //请求数据
         this.getuserpassword()
         this.getCaptcha()
-    },
+      },
       beforeRouteLeave(to, form, next){
           //离开页面去除动态添加该页面meta viewport 手机适配
-          document.querySelector("meta[name='viewport']")["content"] = ""
+          document.querySelector("meta[name='viewport']")["content"] = this.getCurrentWith()
           next()
       },
       methods: {
+        getCurrentWith(){
+            var designWidth = 375;
+            var deviceWidth = parseInt(window.screen.width) || parseInt(document.documentElement.clientWidth);  //获取当前设备的屏幕宽度
+            // var deviceScale = deviceWidth/designWidth;
+            var deviceScale = 0.6;
+            var ua = navigator.userAgent;
+            //获取当前设备类型（安卓或苹果）
+
+            if (ua && /Android (\d+.\d+)/.test(ua)) {
+                // +",user-scalable=no"
+                return "width=680,initial-scale="+deviceScale+",minimum-scale="+deviceScale+",maximum-scale="+deviceScale;
+            }
+            else if (ua && /iPhone|ipad|ipod|ios/.test(ua)){
+                return "width=680,initial-scale="+deviceScale+",minimum-scale="+deviceScale+",maximum-scale="+deviceScale;
+            }
+            else {
+                return '';
+            }
+        },
       // 获取用户名密码
       // 获取菜单
       getMenu() {
@@ -126,7 +147,7 @@
                   menuPermission:item.menuPermission
                 })
               })
-              sessionStorage.setItem('menuList', JSON.stringify(menuList))
+              localStorage.setItem('menuList', JSON.stringify(menuList))
             }
             // console.log(menuTree,'menuTree-----')
             this.allmenu =  menuTree
@@ -138,7 +159,11 @@
               this.$message.warning('暂无授权任何菜单权限~')
             }
 
-            sessionStorage.setItem('allmenu', JSON.stringify(this.allmenu))
+            localStorage.setItem('allmenu', JSON.stringify(this.allmenu))
+            //优化首次登录第一个标签显示问题
+            let tabsPage = [{"title":menuTree[0].text,"name":menuTree[0].attributes.url}]
+            let TabsValue = menuTree[0].attributes.url
+            this.$store.commit('firstTabs', [tabsPage,TabsValue])
             this.$forceUpdate()
           } else {
             this.$message.warning(res.msg)
@@ -173,13 +198,6 @@
       //获取info列表
       submitForm(formName) {
 
-        /*sessionStorage.setItem('logintoken', '111111')
-        sessionStorage.setItem('userName', 'superadmin')
-        sessionStorage.setItem('userId', '11')
-        sessionStorage.setItem('refresh', '222')
-        this.getMenu()
-        return
-*/
         this.$refs[formName].validate(valid => {
           if (valid) {
             this.loadingLg = true
@@ -195,12 +213,17 @@
                   await delCookie('username')
                   await delCookie('password')
                 }
-                await sessionStorage.setItem('logintoken', res.data.access)
-                await sessionStorage.setItem('userName', res.data.name)
-                await sessionStorage.setItem('userId', res.data.userId)
-                await sessionStorage.setItem('refresh', res.data.refresh)
+                // await sessionStorage.setItem('logintoken', res.data.access)
+                // await sessionStorage.setItem('userName', res.data.name)
+                // await sessionStorage.setItem('userId', res.data.userId)
+                // await sessionStorage.setItem('refresh', res.data.refresh)
+                this.$store.commit('setLogintoken', res.data.access)
+                this.$store.commit('setUserName', res.data.name)
+                this.$store.commit('setUserId', res.data.userId)
+                this.$store.commit('setRefresh', res.data.refresh)
                 this.getMenu()
               } else {
+                this.getCaptcha()
                 this.$message.error(res.msg)
                 return false
               }
@@ -236,7 +259,7 @@
       margin: 0px auto;
       width: 350px;
       padding: 30px 35px 15px 35px;
-      background: #fff;
+      background: var(--el-bg-color);
       border: 1px solid #eaeaea;
       text-align: left;
       box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.1);

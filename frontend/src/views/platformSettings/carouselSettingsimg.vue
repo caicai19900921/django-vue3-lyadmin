@@ -1,44 +1,47 @@
 <template>
-    <el-tabs v-model="formInline.type"  @tab-click="getData">
-        <el-tab-pane label="首页轮播图管理" name="1"></el-tab-pane>
-        <el-tab-pane label="分类页轮播图管理" name="2"></el-tab-pane>
-    </el-tabs>
-    <el-table size="small" height="calc(100vh - 214px)" border :data="tableData" v-loading="loadingPage" style="width: 100%">
+    <div>
+        <el-tabs v-model="formInline.type"  @tab-click="handleClick">
+            <el-tab-pane label="首页轮播图管理" name="1"></el-tab-pane>
+            <el-tab-pane label="分类页轮播图管理" name="2"></el-tab-pane>
+        </el-tabs>
+        <el-table :height="'calc('+(tableHeight)+'px)'" border :data="tableData" ref="tableref" v-loading="loadingPage" style="width: 100%">
 
-        <el-table-column type="index" width="60" align="center" label="序号"></el-table-column>
-        <el-table-column min-width="120" prop="image" :label="(formInline.type==1) ? '图片' :'图片'">
-            <template #default="scope">
-                <el-image  :src="scope.row.image" style="width: 50px;height: 50px" :preview-src-list="[scope.row.image]" :fit="fill" :append-to-body="true"></el-image>
-            </template>
-        </el-table-column>
-        <el-table-column min-width="150" prop="title" label="标题" ></el-table-column>
-        <el-table-column min-width="150" prop="link" label="链接" ></el-table-column>
-        <el-table-column min-width="150" prop="sort" label="排序" ></el-table-column>
-        <el-table-column min-width="100" label="状态">
-            <template #default="scope">
-                <el-tag v-if="scope.row.status">正常</el-tag>
-                <el-tag v-else type="danger">禁用</el-tag>
-            </template>
-        </el-table-column>
-        <el-table-column min-width="150" prop="create_datetime" label="创建时间"></el-table-column>
-        <el-table-column label="操作" fixed="right" width="180">
-            <template #header>
-                <el-button size="default" @click="addModule" type="primary" v-show="isShowBtn('carouselSettingsimg','轮播图设置','Create')">新增</el-button>
-            </template>
-            <template #default="scope">
-                <!--v-show="isShowBtn('dynamicsInfo','平台图片设置','Update')"-->
-                <span class="table-operate-btn" @click="handleEdit(scope.row,'edit')" v-show="isShowBtn('carouselSettingsimg','轮播图设置','Update')">编辑</span>
-                <span class="table-operate-btn" @click="handleEdit(scope.row,'delete')" v-show="isShowBtn('carouselSettingsimg','轮播图设置','Delete')">删除</span>
-            </template>
-        </el-table-column>
-    </el-table>
-    <Pagination v-bind:child-msg="pageparm" @callFather="callFather"></Pagination>
-    <add-module ref="addModuleFlag" @refreshData="search"></add-module>
+            <el-table-column type="index" width="60" align="center" label="序号"></el-table-column>
+            <el-table-column min-width="120" prop="image" :label="(formInline.type==1) ? '图片' :'图片'">
+                <template #default="scope">
+                    <el-image  :src="scope.row.image" style="width: 50px;height: 50px" :preview-src-list="[scope.row.image]"  :preview-teleported="true"></el-image>
+                </template>
+            </el-table-column>
+            <el-table-column min-width="150" prop="title" label="标题" ></el-table-column>
+            <el-table-column min-width="150" prop="link" label="链接" ></el-table-column>
+            <el-table-column min-width="150" prop="sort" label="排序" ></el-table-column>
+            <el-table-column min-width="100" label="状态">
+                <template #default="scope">
+                    <el-tag v-if="scope.row.status">正常</el-tag>
+                    <el-tag v-else type="danger">禁用</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column min-width="150" prop="create_datetime" label="创建时间"></el-table-column>
+            <el-table-column label="操作" fixed="right" width="180">
+                <template #header>
+                    <el-button size="default" @click="addModule" type="primary" v-show="isShowBtn('carouselSettingsimg','轮播图设置','Create')">新增</el-button>
+                </template>
+                <template #default="scope">
+                    <!--v-show="isShowBtn('dynamicsInfo','平台图片设置','Update')"-->
+                    <span class="table-operate-btn" @click="handleEdit(scope.row,'edit')" v-show="isShowBtn('carouselSettingsimg','轮播图设置','Update')">编辑</span>
+                    <span class="table-operate-btn" @click="handleEdit(scope.row,'delete')" v-show="isShowBtn('carouselSettingsimg','轮播图设置','Delete')">删除</span>
+                </template>
+            </el-table-column>
+        </el-table>
+        <Pagination v-bind:child-msg="pageparm" @callFather="callFather"></Pagination>
+        <add-module ref="addModuleFlag" @refreshData="search"></add-module>
+    </div>
+
 </template>
 <script>
     import addModule from "./components/addCarouselModule";
     import Pagination from "@/components/Pagination";
-    import {dateFormats} from "@/utils/util";
+    import {dateFormats,getTableHeight} from "@/utils/util";
     import {platformsettingsLunboimg,platformsettingsLunboimgDelete} from '@/api/api'
     export default {
         components:{
@@ -48,6 +51,7 @@
         name:'carouselSettingsimg',
         data() {
             return {
+                tableHeight:500,
                 loadingPage:false,
                 formInline:{
                     type:'1',// 【参数】type轮播图类型: 1为首页轮播图，2为分类页轮播图
@@ -65,14 +69,15 @@
             }
         },
         methods:{
-            handleClick(e) {
+            handleClick(tab,e) {
+                this.formInline.type = tab.props.name
                 this.search()
             },
             addModule() {
                 this.$refs.addModuleFlag.addModuleFn(null,'新增',this.formInline.type)
             },
             changeStatus(row) {
-                console.log(row,'row----')
+                // console.log(row,'row----')
             },
             handleEdit(row,flag) {
                 let vm = this
@@ -124,10 +129,30 @@
                     })
                 }
             },
+            // 计算搜索栏的高度
+            listenResize() {
+				this.$nextTick(() => {
+				    this.getTheTableHeight()
+				})
+			},
+            getTheTableHeight(){
+               this.tableHeight =  getTableHeight(40)
+            }
         },
         created() {
             this.getData()
-        }
+        },
+        mounted() {
+            // 监听页面宽度变化搜索框的高度
+            window.addEventListener('resize', this.listenResize);
+            this.$nextTick(() => {
+              this.getTheTableHeight()
+            })
+        },
+        unmounted() {
+              // 页面销毁，去掉监听事件
+			window.removeEventListener("resize", this.listenResize);
+        },
     }
 </script>
 

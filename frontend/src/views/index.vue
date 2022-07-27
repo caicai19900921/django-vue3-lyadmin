@@ -3,14 +3,14 @@
     <el-header class="index-header">
       <navcon></navcon>
     </el-header>
-    <div class="main-con" style="width:100%">
+    <div class="main-con">
       <div style="display: flex; flex-direction: row;">
         <el-aside :class="showclass">
           <el-scrollbar>
             <leftnav ></leftnav>
           </el-scrollbar>
         </el-aside>
-        <div class="container-outer 100vh">
+        <div class="container-outer">
           <el-main class="index-main" v-if="isMultiTabs">
             <mutitabs></mutitabs>
           </el-main>
@@ -61,6 +61,11 @@
   }
 </script>
 <style lang="scss" scoped>
+  .main-con{
+    width:100%;
+    height: 100%;
+    /*overflow-y: auto;*/
+  }
   .hg100{
     height: 100vh !important;
     overflow-y: hidden !important;
@@ -74,18 +79,18 @@
 
   .aside {
     width: 64px !important;
-    background-color: #3C444D;
+    background-color: var(--l-header-bg);
     margin: 0px;
-    border-right: 1px solid #eeeeee;
+    box-shadow: 0 0 5px #cccccc;
     height: calc(100vh - 60px);
   }
 
   .asideshow {
     width: 185px !important;
     height: calc(100vh - 60px);
-    background-color: #3C444D;
+    background-color: var(--l-header-bg);
     margin: 0px;
-    border-right: 1px solid #eeeeee;
+    box-shadow: 0 0 5px #cccccc;
   }
 
   .index-main {
@@ -96,7 +101,7 @@
     -ms-flex-preferred-size: auto;
     flex-basis: auto;
     overflow: auto;
-    padding: 20px 20px 0 20px;
+    padding: 8px 13px 0 13px;
     width: 100%;
   }
   .index-header{
@@ -111,8 +116,9 @@
 
   .container-outer{
     width: 100%;
-    height: calc(100vh - 60px);
+    /*height: calc(100vh - 60px);*/
     overflow-y: auto;
+    background: var(--l-main-bg);
   }
 
 </style>

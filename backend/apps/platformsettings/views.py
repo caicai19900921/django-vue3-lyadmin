@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from utils.jsonResponse import SuccessResponse,ErrorResponse
+from utils.jsonResponse import SuccessResponse,ErrorResponse,DetailResponse
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -39,7 +39,7 @@ class LunbotuManageViewSet(CustomModelViewSet):
     """
     queryset = LunbotuManage.objects.all().order_by('sort')
     serializer_class = LunbotuManageSerializer
-    filter_fields = ('type',)
+    filterset_fields = ('type',)
 
 class OtherManageSerializer(CustomModelSerializer):
     """
@@ -84,6 +84,7 @@ class PlatformImagesUploadView(APIView):
 # ================================================= #
 # ************** 前端用户获取平台配置信息 view  ************** #
 # ================================================= #
+
 class GetOtherManageDetailView(APIView):
     """
     前端用户获取平台其他设置接口

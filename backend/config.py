@@ -27,7 +27,11 @@ DATABASE_CONN_MAX_AGE = 0 #7200（2小时）使用 None 则是无限的持久连
 # ================================================= #
 
 IS_DEMO = False #是否演示模式（演示模式只能查看无法保存、编辑、删除、新增）
+ALLOW_FRONTEND = True#是否关闭前端API访问
+FRONTEND_API_LIST = ['/api/app/','/api/xcx/']
 DOMAIN_HOST = "http://127.0.0.1:8000"
+EXEC_LOG_PATH =  os.path.join(BASE_DIR, 'logs','lybbnexec.log')
+TEMP_EXEC_PATH =  os.path.join(BASE_DIR, 'logs')
 
 # ================================================= #
 # ************** 极光推送 配置  ************** #
@@ -35,6 +39,14 @@ DOMAIN_HOST = "http://127.0.0.1:8000"
 
 JIGUANG_APPKEY = "141990xxxx"
 JIGUANG_SECRET = "b26b91xxxxxxxxxxxxxxxx"
+
+# ================================================= #
+# ************** 字节跳动（抖音）小程序 配置  ************** #
+# ================================================= #
+#小程序appid
+TT_XCX_APPID = "xxxxxxxxxxxxx"
+#小程序秘钥
+TT_XCX_APPSECRET = "xxxxxxxxxxxxxxxxxx"
 
 # ================================================= #
 # ************** 微信小程序 配置  ************** #
@@ -77,6 +89,15 @@ ALIYUN_SMS_ACCESS_KEY_SECRET = "xxxxxxxxxxxxxxxxxxxxxxx"
 ALIYUN_SMS_SIGN='xxx'#短信签名名称
 ALIYUM_SMS_TEMPLATE='SMS_221xxxxx'#模板code
 
+# ================================================= #
+# ************** 腾讯云发送短信 配置  ************** #
+# ================================================= #
+# SECRETID/SECRETKEY 根据实际申请的账号信息进行替换
+TENCENT_SMS_SECRETID = "xxxxxxxxxxxxxxxxxxxxxxxx"#CAM ID
+TENCENT_SMS_SECRETKEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"#CAM密匙
+TENCENT_SMS_APPID = "14003xxxxx"#SdkAppId
+TENCENT_SMS_SIGN='lybbn测试名称'#短信签名名称
+TENCENT_SMS_TEMPLATE_ID='65xxxx'#模板id
 
 # ================================================= #
 # ************** 微信支付 配置  ************** #

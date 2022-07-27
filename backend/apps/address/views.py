@@ -11,6 +11,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from utils.common import get_parameter_dic
 from django.core.cache import cache
 from utils.locationanalysis import gettecentlnglat
+from utils.serializers import CustomModelSerializer
+from utils.viewset import CustomModelViewSet
+from rest_framework import serializers
 
 # ================================================= #
 # ************** 省市区查询自己接口管理 view  ************** #
@@ -89,6 +92,62 @@ class SubAreasView(APIView):
         # 3.响应市或区数据
         return SuccessResponse(data=sub_data,msg="success")
 
+def CommentTree(datas):
+    """
+    获取结构树
+    :param datas:
+    :return:
+    """
+    lists=[]
+    tree={}
+    parent_id=''
+    for s in datas:
+       item=s
+       tree[item['id']]=item
+    root=None
+    for i in datas:
+       obj=i
+       if not obj['pid']:#判断根评论
+           root=tree[obj['id']]
+           lists.append(root)#添加到列表
+           if 'childlist' not in tree[obj['id']]:
+               tree[obj['id']]['childlist'] = []
+       else:
+           parent_id=obj['pid']
+           if 'childlist' not in tree[parent_id]:
+               tree[parent_id]['childlist']=[]
+           tree[parent_id]['childlist'].append(tree[obj['id']])
+    return lists
+class Area2Serializer(CustomModelSerializer):
+    """
+    省市区 -序列化器
+    """
+    pid = serializers.CharField(source="parent_id")
+
+    class Meta:
+        model = Area
+        read_only_fields = ["id"]
+        fields = ['id','name','pid']
+        # exclude = ['password']
+        # extra_kwargs = {
+        #     'post': {'required': False},
+        # }
+
+class GetProvinceAreasListView(APIView):
+    """
+    递归获取所有省市区
+    get:
+    递归获取所有省市区
+    """
+    permission_classes = []
+    authentication_classes = []
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
+
+    def get(self, request):
+        queryset_ser  = Area2Serializer(Area.objects.filter(status=True).order_by('create_datetime'),many=True)
+        queryset_list = CommentTree(queryset_ser.data)
+        return SuccessResponse(data=queryset_list, msg='success')
 # ================================================= #
 # ************** 根据详细地址获取经纬度信息 view  ************** #
 # ================================================= #
